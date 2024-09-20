@@ -62,3 +62,64 @@ pm.sendRequest({
         pm.environment.set('access_token', jsonData.access_token);
     }
 });
+```
+
+## Usage
+
+### Albums
+
+- **Get Album Details**: Fetch detailed information about a specific album.
+
+     GET https://api.spotify.com/v1/albums/{album_id}
+
+  
+### Playlists
+
+- **Create New Playlist**: Create a new playlist for a user.
+
+     POST https://api.spotify.com/v1/users/{user_id}/playlists
+
+
+- **Change Playlist Details**: Modify details of a playlist.
+
+     PUT https://api.spotify.com/v1/playlists/{playlist_id}
+
+
+- **Get Playlist**: Retrieve a playlist's details.
+
+     GET https://api.spotify.com/v1/playlists/{playlist_id}
+
+
+- **Add Items to Playlist**: Add tracks to a playlist.
+
+     POST https://api.spotify.com/v1/playlists/{playlist_id}/tracks
+
+
+- **Delete Items from Playlist**: Remove tracks from a playlist.
+
+     DELETE https://api.spotify.com/v1/playlists/{playlist_id}/tracks
+
+
+---
+
+## Running the Collection with Newman
+
+You can run this collection using **Newman**, Postman's command-line runner.
+
+### Install Newman:
+
+```sh
+npm install -g newman
+```
+```sh
+newman run spotify_api_collection.json -e spotify_api_environment.json
+```
+
+## Contributing
+
+-*Feel free to open issues or submit pull requests if you find any bugs or want to add new features.*
+
+## License
+
+-*This project is licensed under the MIT License.*
+
