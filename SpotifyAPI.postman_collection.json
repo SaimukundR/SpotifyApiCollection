@@ -1,0 +1,327 @@
+{
+	"info": {
+		"_postman_id": "cdcb335f-ccd9-43b8-b2a6-858e45a24ffd",
+		"name": "SpotifyAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "31969350"
+	},
+	"item": [
+		{
+			"name": "Albums",
+			"item": [
+				{
+					"name": "Get_Albums",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": "{{base_url}}/albums/{{album_Id}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Playlist",
+			"item": [
+				{
+					"name": "Create new playlist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resJson=pm.response.json();\r",
+									"pm.collectionVariables.set(\"playlist_ID\",resJson.id);\r",
+									"pm.collectionVariables.set(\"playlist_Name\",resJson.name);\r",
+									"pm.collectionVariables.set(\"playlist_Description\",resJson.description);\r",
+									"pm.collectionVariables.set(\"plalist_Public\",resJson.collaborative);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer 1POdFZRZbvb...qqillRxMr2z",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomAdjective}}\",\r\n    \"description\": \"{{$randomWords}}\",\r\n    \"public\": {{$randomBoolean}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://api.spotify.com/v1/users/{{user_Id}}/playlists"
+					},
+					"response": []
+				},
+				{
+					"name": "Change playlist details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const reqJson = JSON.parse(pm.request.body.raw);\r",
+									"\r",
+									"// Validate the response code is 200\r",
+									"pm.test(\"Response code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Log the parsed JSON object to the console for debugging\r",
+									"console.log(reqJson.name);\r",
+									"\r",
+									"// Set collection variables using the parsed values\r",
+									"pm.collectionVariables.set( \"playlist_Name\", reqJson.name);\r",
+									"pm.collectionVariables.set(\"playlist_Description\", reqJson.description);\r",
+									"pm.collectionVariables.set(\"playlist_Public\", reqJson.public);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer 1POdFZRZbvb...qqillRxMr2z"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomAdjective}}\",\r\n    \"description\": \"{{$randomWords}}\",\r\n     \"public\": {{$randomBoolean}}\r\n}"
+						},
+						"url": "https://api.spotify.com/v1/playlists/{{playlist_ID}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Get_playlist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Fixed syntax \r",
+									"\r",
+									"pm.test(\"Playlist info\", function () {\r",
+									"  pm.expect(pm.response.json().name).to.eql(pm.collectionVariables.get(\"playlist_Name\"));\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/playlists/{{playlist_ID}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Add items to playlist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resJson=pm.response.json();\r",
+									"\r",
+									"pm.collectionVariables.set(\"snapShotId\",resJson.snapshot_id);\r",
+									"console.log(resJson.snapshot_id)\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uris\": [\r\n       \"{{album_Uri}}\"\r\n    ],\r\n    \"position\": 0\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/playlists/{{playlist_ID}}/tracks"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete items in the playlist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resJson=pm.response.json();\r",
+									"var actual= resJson.snapshot_id;\r",
+									"console.log(pm.collectionVariables.get(\"snapShotId\"));\r",
+									"var expected = pm.collectionVariables.get(\"snapShotId\");\r",
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// pm.test(\"Snapshot ID is correct\", function () {\r",
+									"//   pm.expect(actual).to.eql(expected);\r",
+									"// });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tracks\": [\r\n        {\r\n            \"uri\": \"{{album_Uri}}\"\r\n        }\r\n    ],\r\n    \"snapshot_id\": \"{{snapShot_Id}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/playlists/{{playlist_ID}}/tracks"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": {
+			"tokenType": "Bearer",
+			"accessToken": "BQDA4aHp7nXWfozvjbAPlO6_EIHZkRd2D2CTVWFOe6rG4juS-PCxrXMns3LPnuo_5SaZGMV1FAehlHzH0GUw0IXfYF_giqohrpP1nHPcsiWnrX8qDGkYM-Eb29hTAdNH0ew0zIsmr6Spm1-nocKSy067gkwdz4Qz_EYuPkcSnCGKQyudjNctdJT7QHv24kuplyHmykiEHRzrkNqRgzwmZAjk6jPSQWgH3pauV-JWGW81sext8DM90gcICWua7qKJIKomzQi4rtZtEiftUlQwUA",
+			"addTokenTo": "header",
+			"useBrowser": false,
+			"redirect_uri": "https://oauth.pstmn.io/v1/browser-callback",
+			"scope": "playlist-modify-public playlist-read-private playlist-modify-private",
+			"clientSecret": "{{Client_Secret}}",
+			"clientId": "{{Client_ID}}",
+			"authUrl": "https://accounts.spotify.com/authorize",
+			"accessTokenUrl": "https://accounts.spotify.com/api/token"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "playlist_ID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "album_Id",
+			"value": "04tiYLdgFjW1Q5SaVJJb8j"
+		},
+		{
+			"key": "snapShot_Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "album_Uri",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "snapShotId",
+			"value": ""
+		},
+		{
+			"key": "playlist_Name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "playlist_Description",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "playlist_Public",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "position",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "plalist_Public",
+			"value": ""
+		}
+	]
+}
